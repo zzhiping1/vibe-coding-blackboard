@@ -46,7 +46,7 @@ async function callBackend(
     return invoke("chat_completion", {
       messages: apiMessages.map((m) => ({
         role: m.role,
-        content: typeof m.content === "string" ? m.content : JSON.stringify(m.content),
+        content: m.content,
       })),
       canvasState,
       apiKey,

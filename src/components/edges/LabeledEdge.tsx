@@ -60,7 +60,7 @@ export function LabeledEdge({
   return (
     <>
       <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
-      <EdgeLabelRenderer>
+      {label ? (<EdgeLabelRenderer>
         <div
           style={{
             position: "absolute",
@@ -85,7 +85,7 @@ export function LabeledEdge({
             </div>
           )}
         </div>
-      </EdgeLabelRenderer>
+      </EdgeLabelRenderer>) : null}
     </>
   );
 }

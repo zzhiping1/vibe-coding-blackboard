@@ -7,6 +7,7 @@ import { PropertiesPanel } from "./components/properties/PropertiesPanel";
 import { ExportDialog } from "./components/export/ExportDialog";
 import { ChatPanel } from "./components/chat/ChatPanel";
 import { TemplateDialog } from "./components/templates/TemplateDialog";
+import { ToastContainer } from "./components/ui/Toast";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { useCanvasStore } from "./stores/canvas-store";
 
@@ -74,6 +75,7 @@ export default function App() {
         </div>
         {showExport && <ExportDialog onClose={() => setShowExport(false)} />}
         {showTemplate && <TemplateDialog onClose={() => setShowTemplate(false)} />}
+        <ToastContainer />
       </div>
     </ReactFlowProvider>
   );

@@ -5,6 +5,7 @@ import {
   MiniMap,
   Background,
   BackgroundVariant,
+  MarkerType,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCanvasStore } from "../../stores/canvas-store";
@@ -79,8 +80,21 @@ export function Canvas() {
     [addEdge]
   );
 
+  const isEmpty = nodes.length === 0;
+
   return (
     <div className="canvas-wrapper" ref={reactFlowWrapper}>
+      {isEmpty && (
+        <div className="canvas-empty-state">
+          <div className="canvas-empty-icon">🎨</div>
+          <div className="canvas-empty-title">开始你的 Vibe Coding</div>
+          <div className="canvas-empty-tips">
+            <div>从左侧面板拖拽组件到画布</div>
+            <div>或选择一个模板快速开始</div>
+            <div>也可以让 AI 助手帮你搭建</div>
+          </div>
+        </div>
+      )}
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -96,12 +110,14 @@ export function Canvas() {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitView
+        elevateNodesOnSelect={false}
         deleteKeyCode={null}
         multiSelectionKeyCode="Shift"
         defaultEdgeOptions={{
           type: "smoothstep",
           animated: false,
-          style: { strokeWidth: 2.5, stroke: "#334155" },
+          style: { strokeWidth: 2, stroke: "#64748b" },
+          markerEnd: { type: MarkerType.ArrowClosed, color: "#64748b", width: 20, height: 20 },
         }}
       >
         <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#e0e0e0" />

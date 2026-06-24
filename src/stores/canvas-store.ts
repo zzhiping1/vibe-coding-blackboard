@@ -3,11 +3,13 @@ import {
   type Node,
   type Edge,
   type XYPosition,
+  MarkerType,
   applyNodeChanges,
   applyEdgeChanges,
   type OnNodesChange,
   type OnEdgesChange,
 } from "@xyflow/react";
+import dagre from "dagre";
 import type { CanvasNodeData } from "../types/canvas";
 import type { NodeDefinition } from "../types/node-palette";
 
@@ -39,6 +41,7 @@ interface CanvasStore {
   clearCanvas: () => void;
   setProjectName: (name: string) => void;
   setProjectDescription: (desc: string) => void;
+  autoLayout: () => void;
   undo: () => void;
   redo: () => void;
   canUndo: () => boolean;
@@ -84,11 +87,12 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       id: `edge_${Date.now()}_${Math.random().toString(36).slice(2)}`,
       source: connection.source,
       target: connection.target,
-      sourceHandle: connection.sourceHandle,
-      targetHandle: connection.targetHandle,
+      sourceHandle: "source-bottom",
+      targetHandle: "target-top",
       type: "smoothstep",
       animated: false,
-      style: { strokeWidth: 2.5, stroke: "#334155" },
+      style: { strokeWidth: 2, stroke: "#64748b" },
+      markerEnd: { type: MarkerType.ArrowClosed, color: "#64748b", width: 20, height: 20 },
     };
     set({
       edges: [...get().edges, newEdge],
@@ -180,7 +184,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     set({
       nodes: get().nodes.filter((n) => !ids.includes(n.id)),
       edges: get().edges.filter(
-        (e) => !ids.includes(e.source) && !ids.includes(e.target)
+        (e) => !ids.includes(e.id) && !ids.includes(e.source) && !ids.includes(e.target)
       ),
       past: [...get().past.slice(-MAX_HISTORY), snapshot],
       future: [],
@@ -189,6 +193,50 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
 
   loadCanvas: (nodes, edges) => {
     set({ nodes, edges, past: [], future: [] });
+  },
+
+  autoLayout: () => {
+    const { nodes, edges } = get();
+    if (nodes.length === 0) return;
+    const snapshot = takeSnapshot(get());
+
+    const g = new dagre.graphlib.Graph();
+    g.setDefaultEdgeLabel(() => ({}));
+    g.setGraph({ rankdir: "TB", nodesep: 160, ranksep: 200, marginx: 80, marginy: 80 });
+
+    for (const node of nodes) {
+      g.setNode(node.id, { width: 200, height: 60 });
+    }
+    for (const edge of edges) {
+      g.setEdge(edge.source, edge.target);
+    }
+
+    dagre.layout(g);
+
+    const layouted = nodes.map((node) => {
+      const pos = g.node(node.id);
+      if (!pos) return node;
+      return {
+        ...node,
+        position: { x: pos.x - 90, y: pos.y - 30 },
+      };
+    });
+
+    const nodeMap = new Map(layouted.map((n) => [n.id, n]));
+
+    const layoutedEdges = edges.map((edge) => ({
+      ...edge,
+      sourceHandle: "source-bottom",
+      targetHandle: "target-top",
+      markerEnd: { type: MarkerType.ArrowClosed, color: "#64748b", width: 20, height: 20 },
+    }));
+
+    set({
+      nodes: layouted,
+      edges: layoutedEdges,
+      past: [...get().past.slice(-MAX_HISTORY), snapshot],
+      future: [],
+    });
   },
 
   clearCanvas: () => {

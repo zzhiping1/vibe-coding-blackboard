@@ -39,8 +39,11 @@ function BaseNodeComponent({ id, data, selected }: NodeProps) {
       className={`vcb-node ${selected ? "vcb-node--selected" : ""}`}
       style={{ borderLeftColor: d.color }}
     >
-      <Handle type="target" position={Position.Top} className="vcb-handle" id="target-top" />
-      <Handle type="target" position={Position.Left} className="vcb-handle" id="target-left" />
+      <Handle
+        type="target"
+        position={Position.Top}
+        className="vcb-handle"
+      />
       <div className="vcb-node-header">
         <span className="vcb-node-icon">{d.icon}</span>
         {editing ? (
@@ -54,15 +57,18 @@ function BaseNodeComponent({ id, data, selected }: NodeProps) {
           />
         ) : (
           <span className="vcb-node-label" onDoubleClick={handleDoubleClick}>
-            {d.label}
+            {label}
           </span>
         )}
       </div>
       {d.specs && (
         <div className="vcb-node-specs">{d.specs.split("\n")[0]}</div>
       )}
-      <Handle type="source" position={Position.Bottom} className="vcb-handle" id="source-bottom" />
-      <Handle type="source" position={Position.Right} className="vcb-handle" id="source-right" />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        className="vcb-handle"
+      />
     </div>
   );
 }

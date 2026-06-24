@@ -38,6 +38,7 @@ pub struct ToolCall {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ChatCompletionResponse {
     pub content: String,
     pub tool_calls: Vec<ToolCall>,
@@ -230,10 +231,18 @@ pub async fn chat_completion(
         let mut body_no_tools = body.clone();
         body_no_tools.as_object_mut().unwrap().remove("tools");
 
-        let retry_resp = client
+        let mut retry_builder = client
             .post(&url)
             .header("anthropic-version", "2023-06-01")
-            .header("content-type", "application/json")
+            .header("content-type", "application/json");
+
+        if auth_style == "api-key" {
+            retry_builder = retry_builder.header("x-api-key", &api_key);
+        } else if auth_style != "none" {
+            retry_builder = retry_builder.header("authorization", format!("Bearer {}", &api_key));
+        }
+
+        let retry_resp = retry_builder
             .json(&body_no_tools)
             .send()
             .await

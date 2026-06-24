@@ -387,7 +387,7 @@ html, body, #root {
   min-width: 140px;
   max-width: 220px;
   box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.15s;
+  transition: box-shadow 0.15s, border-color 0.15s;
 }
 
 .vcb-node:hover {
@@ -396,7 +396,26 @@ html, body, #root {
 
 .vcb-node--selected {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(59,130,246,0.3);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
+}
+
+/* ========= Edge Selection ========= */
+.react-flow__edge .react-flow__edge-path {
+  transition: stroke 0.15s, stroke-width 0.15s;
+}
+
+.react-flow__edge .react-flow__edge-interaction {
+  stroke-width: 20;
+}
+
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke: #334155 !important;
+  stroke-width: 2.5 !important;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--accent) !important;
+  stroke-width: 2.5 !important;
 }
 
 .vcb-node-header {
@@ -504,6 +523,117 @@ html, body, #root {
 .toolbar-btn--disabled {
   opacity: 0.4;
   pointer-events: none;
+}
+
+.toolbar-btn--icon {
+  padding: 6px 8px;
+  min-width: 32px;
+  justify-content: center;
+}
+
+.toolbar-btn--danger:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+/* ========= Toast ========= */
+.toast-container {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: white;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  font-size: 13px;
+  cursor: pointer;
+  animation: toastSlideIn 0.25s ease-out;
+}
+
+.toast-icon {
+  flex-shrink: 0;
+}
+
+.toast--success { border-left: 3px solid #22c55e; }
+.toast--success .toast-icon { color: #22c55e; }
+
+.toast--error { border-left: 3px solid #ef4444; }
+.toast--error .toast-icon { color: #ef4444; }
+
+.toast--info { border-left: 3px solid #3b82f6; }
+.toast--info .toast-icon { color: #3b82f6; }
+
+@keyframes toastSlideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* ========= Canvas Empty State ========= */
+.canvas-empty-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 5;
+  pointer-events: none;
+  user-select: none;
+}
+
+.canvas-empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.canvas-empty-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.canvas-empty-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ========= Properties Panel Extras ========= */
+.properties-value {
+  font-size: 13px;
+  color: var(--text-primary);
+  padding: 4px 0;
+}
+
+.properties-delete-btn {
+  width: 100%;
+  padding: 8px;
+  font-size: 13px;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.properties-delete-btn:hover {
+  background: #fee2e2;
+  border-color: #dc2626;
 }
 
 /* ========= Group Node ========= */
@@ -1354,5 +1484,32 @@ html, body, #root {
 
   .export-preview pre {
     color: #e2e8f0;
+  }
+
+  .toast {
+    background: #1e293b;
+    border-color: #475569;
+    color: var(--text-primary);
+  }
+
+  .toolbar-btn--danger:hover {
+    background: #450a0a;
+    border-color: #7f1d1d;
+    color: #fca5a5;
+  }
+
+  .canvas-empty-title {
+    color: var(--text-primary);
+  }
+
+  .properties-delete-btn {
+    background: #450a0a;
+    border-color: #7f1d1d;
+    color: #fca5a5;
+  }
+
+  .properties-delete-btn:hover {
+    background: #7f1d1d;
+    border-color: #dc2626;
   }
 }

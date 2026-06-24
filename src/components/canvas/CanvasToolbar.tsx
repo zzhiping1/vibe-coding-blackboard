@@ -1,5 +1,6 @@
 import { useCanvasStore } from "../../stores/canvas-store";
 import { useUIStore } from "../../stores/ui-store";
+import { useToastStore } from "../../stores/toast-store";
 import type { CanvasNodeData } from "../../types/canvas";
 import type { Node } from "@xyflow/react";
 
@@ -18,8 +19,10 @@ export function CanvasToolbar({ onExport, onTemplate }: Props) {
   const canUndo = useCanvasStore((s) => s.canUndo());
   const canRedo = useCanvasStore((s) => s.canRedo());
   const clearCanvas = useCanvasStore((s) => s.clearCanvas);
+  const autoLayout = useCanvasStore((s) => s.autoLayout);
   const toggleChat = useUIStore((s) => s.toggleChat);
   const chatOpen = useUIStore((s) => s.chatOpen);
+  const toast = useToastStore((s) => s.addToast);
 
   const addGroup = () => {
     const groupNode: Node<CanvasNodeData> = {
@@ -40,10 +43,32 @@ export function CanvasToolbar({ onExport, onTemplate }: Props) {
     state.loadCanvas([...state.nodes, groupNode], state.edges);
   };
 
+  const handleSave = () => {
+    const data = {
+      nodes: useCanvasStore.getState().nodes,
+      edges: useCanvasStore.getState().edges,
+      projectName: useCanvasStore.getState().projectName,
+    };
+    localStorage.setItem("vcb-save", JSON.stringify(data));
+    toast("已保存到本地");
+  };
+
+  const handleLoad = () => {
+    const raw = localStorage.getItem("vcb-save");
+    if (raw) {
+      const data = JSON.parse(raw);
+      useCanvasStore.getState().loadCanvas(data.nodes || [], data.edges || []);
+      if (data.projectName) useCanvasStore.getState().setProjectName(data.projectName);
+      toast("已加载本地草稿");
+    } else {
+      toast("没有找到本地保存", "info");
+    }
+  };
+
   return (
     <div className="toolbar">
       <div className="toolbar-left">
-        <span className="toolbar-logo">📋</span>
+        <span className="toolbar-logo">🎨</span>
         <input
           className="toolbar-project-name"
           value={projectName}
@@ -54,64 +79,67 @@ export function CanvasToolbar({ onExport, onTemplate }: Props) {
           {nodeCount} 节点 / {edgeCount} 连线
         </span>
       </div>
+
       <div className="toolbar-right">
         <button
-          className={`toolbar-btn ${!canUndo ? "toolbar-btn--disabled" : ""}`}
+          className={`toolbar-btn toolbar-btn--icon ${!canUndo ? "toolbar-btn--disabled" : ""}`}
           onClick={undo}
           title="撤销 (Ctrl+Z)"
         >
-          ↩ 撤销
+          ↩️
         </button>
         <button
-          className={`toolbar-btn ${!canRedo ? "toolbar-btn--disabled" : ""}`}
+          className={`toolbar-btn toolbar-btn--icon ${!canRedo ? "toolbar-btn--disabled" : ""}`}
           onClick={redo}
           title="重做 (Ctrl+Y)"
         >
-          ↪ 重做
+          ↪️
         </button>
+
         <div className="toolbar-divider" />
-        <button className="toolbar-btn" onClick={() => {
-          const data = { nodes: useCanvasStore.getState().nodes, edges: useCanvasStore.getState().edges, projectName: useCanvasStore.getState().projectName };
-          localStorage.setItem("vcb-save", JSON.stringify(data));
-        }} title="保存到本地">
-          💾 保存
+
+        <button className="toolbar-btn toolbar-btn--icon" onClick={handleSave} title="保存到本地">
+          💾
         </button>
-        <button className="toolbar-btn" onClick={() => {
-          const raw = localStorage.getItem("vcb-save");
-          if (raw) {
-            const data = JSON.parse(raw);
-            useCanvasStore.getState().loadCanvas(data.nodes || [], data.edges || []);
-            if (data.projectName) useCanvasStore.getState().setProjectName(data.projectName);
-          }
-        }} title="从本地加载">
-          📂 打开
+        <button className="toolbar-btn toolbar-btn--icon" onClick={handleLoad} title="从本地加载">
+          📂
         </button>
-        <button className="toolbar-btn" onClick={onExport} title="导出">
-          📤 导出
+        <button className="toolbar-btn toolbar-btn--icon" onClick={onExport} title="导出">
+          📤
         </button>
+
         <div className="toolbar-divider" />
+
+        <button className="toolbar-btn toolbar-btn--icon" onClick={autoLayout} title="一键整理（思维导图布局）">
+          🔄
+        </button>
+        <button className="toolbar-btn toolbar-btn--icon" onClick={addGroup} title="添加分组">
+          📦
+        </button>
+        <button className="toolbar-btn toolbar-btn--icon" onClick={onTemplate} title="选择模板">
+          📋
+        </button>
         <button
-          className="toolbar-btn"
+          className="toolbar-btn toolbar-btn--icon toolbar-btn--danger"
           onClick={() => {
-            if (confirm("确定清空画布？此操作可撤销。")) clearCanvas();
+            if (confirm("确定清空画布？此操作可撤销。")) {
+              clearCanvas();
+              toast("画布已清空");
+            }
           }}
           title="清空画布"
         >
-          🗑️ 清空
+          🗑️
         </button>
-        <button className="toolbar-btn" onClick={addGroup} title="添加分组">
-          📦 分组
-        </button>
-        <button className="toolbar-btn" onClick={onTemplate} title="选择模板">
-          📋 模板
-        </button>
+
         <div className="toolbar-divider" />
+
         <button
           className={`toolbar-btn ${chatOpen ? "toolbar-btn--active" : ""}`}
           onClick={toggleChat}
           title="AI 助手"
         >
-          🤖 AI 助手
+          🤖 AI
         </button>
       </div>
     </div>
