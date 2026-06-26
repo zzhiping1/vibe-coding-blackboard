@@ -87,8 +87,8 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       id: `edge_${Date.now()}_${Math.random().toString(36).slice(2)}`,
       source: connection.source,
       target: connection.target,
-      sourceHandle: "source-bottom",
-      targetHandle: "target-top",
+      sourceHandle: connection.sourceHandle,
+      targetHandle: connection.targetHandle,
       type: "labeled",
       animated: false,
       style: { strokeWidth: 2, stroke: "#64748b" },
@@ -202,7 +202,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
 
     const g = new dagre.graphlib.Graph();
     g.setDefaultEdgeLabel(() => ({}));
-    g.setGraph({ rankdir: "TB", nodesep: 160, ranksep: 200, marginx: 80, marginy: 80 });
+    g.setGraph({ rankdir: "LR", nodesep: 100, ranksep: 160, marginx: 80, marginy: 80 });
 
     for (const node of nodes) {
       g.setNode(node.id, { width: 200, height: 60 });
@@ -226,8 +226,8 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
 
     const layoutedEdges = edges.map((edge) => ({
       ...edge,
-      sourceHandle: "source-bottom",
-      targetHandle: "target-top",
+      sourceHandle: edge.sourceHandle,
+      targetHandle: edge.targetHandle,
       markerEnd: { type: MarkerType.ArrowClosed, color: "#64748b", width: 20, height: 20 },
     }));
 

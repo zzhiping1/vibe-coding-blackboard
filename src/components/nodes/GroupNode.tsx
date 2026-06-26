@@ -53,8 +53,8 @@ function GroupNodeComponent({ id, data, selected }: NodeProps) {
           </span>
         )}
       </div>
-      <Handle type="target" position={Position.Top} className="vcb-handle" />
-      <Handle type="source" position={Position.Bottom} className="vcb-handle" />
+      <Handle type="target" position={Position.Left} className="vcb-handle" />
+      <Handle type="source" position={Position.Right} className="vcb-handle" />
     </div>
   );
 }

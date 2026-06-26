@@ -35,13 +35,11 @@ function BaseNodeComponent({ id, data, selected }: NodeProps) {
   );
 
   return (
-    <div
-      className={`vcb-node ${selected ? "vcb-node--selected" : ""}`}
-      style={{ borderLeftColor: d.color }}
-    >
+    <div className={`vcb-node ${selected ? "vcb-node--selected" : ""}`}>
+      <div className="vcb-node-accent" style={{ background: d.color }} />
       <Handle
         type="target"
-        position={Position.Top}
+        position={Position.Left}
         className="vcb-handle"
       />
       <div className="vcb-node-header">
@@ -66,7 +64,7 @@ function BaseNodeComponent({ id, data, selected }: NodeProps) {
       )}
       <Handle
         type="source"
-        position={Position.Bottom}
+        position={Position.Right}
         className="vcb-handle"
       />
     </div>
