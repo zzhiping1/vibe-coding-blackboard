@@ -114,7 +114,7 @@ export function Canvas() {
         deleteKeyCode={null}
         multiSelectionKeyCode="Shift"
         defaultEdgeOptions={{
-          type: "smoothstep",
+          type: "labeled",
           animated: false,
           style: { strokeWidth: 2, stroke: "#64748b" },
           markerEnd: { type: MarkerType.ArrowClosed, color: "#64748b", width: 20, height: 20 },
